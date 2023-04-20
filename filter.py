@@ -55,3 +55,45 @@ def case_info(db_details,*args):
 
     connection.close()
 
+def highInfectionRate(db_details):
+    """
+    Looking at countries with highest infection rate compared to population
+    """
+    SOURCE_DB = db_details['SOURCE_DB']
+    connection = getconn(db_host = SOURCE_DB['DB_HOST'], db_name= SOURCE_DB['DB_NAME'],
+                                       db_user = SOURCE_DB['DB_USER'], db_pass =SOURCE_DB['DB_PASS'])
+    
+    cursor = connection.cursor()
+    query = """
+    SELECT location, population, max(total_cases) as HighestInfectionCount, MAX((total_cases / population)*100) as CasePercentage 
+    FROM coviddeaths 
+    GROUP BY location, population
+    ORDER BY CasePercentage desc """
+    cursor.execute(query)
+    data = cursor.fetchall()
+    column_names = cursor.column_names
+    df2 = create_dataframe(data, column_names)
+    connection.close()
+    return df2
+
+def highDeathPercentage(db_details):
+    """Countries with the highest death count per population 
+    """
+    SOURCE_DB = db_details['SOURCE_DB']
+    connection = getconn(db_host = SOURCE_DB['DB_HOST'], db_name= SOURCE_DB['DB_NAME'],
+                                       db_user = SOURCE_DB['DB_USER'], db_pass =SOURCE_DB['DB_PASS'])
+    
+    cursor = connection.cursor()
+    query = """ SELECT location, population, MAX((total_deaths / population)*100) as DeathPercentage, MAX(total_deaths) as maxDeath
+            FROM coviddeaths 
+            WHERE continent != ''
+            GROUP BY location, population
+            ORDER BY DeathPercentage DESC"""
+    cursor.execute(query)
+    data = cursor.fetchall()
+    column_names = cursor.column_names
+    df3 = create_dataframe(data, column_names)
+    connection.close()
+    return df3
+
+

@@ -8,7 +8,8 @@ from config import DB_DETAILS
 #import get_tables from util.py to get the tables to be loaded from the table_list.txt
 from util import get_tables, load_db_details
 from read import read_table
-from filter import case_info, create_dataframe
+#from filter import case_info, create_dataframe, highInfectionRate
+from filter import *
 
 def main():
    #get details about the database
@@ -31,7 +32,24 @@ def main():
     df = create_dataframe(data, column_name)
     
     """case info renders two plots: case percentage and death percentage plot for the countries specified """
-   case_info(db_details, "%United States","Italy","%India%","%China%")
+   #case_info(db_details, "%United States","Italy","%India%","%China%")
+
+   """
+   Looking at countries with highest infection rate compared to population and finding the country with the highest case%
+   """
+   """df2 = highInfectionRate(db_details)
+   print(df2)
+   print(f'Country with highest case percentage per population of {df2.CasePercentage[0]}% is {df2.location[0]}')"""
+   
+   """
+   Looking at countries with highest death rate compared to population and finding the country with the highest death% and death count due to covid
+   """
+
+   df3 = highDeathPercentage(db_details)
+   print(f'Country with highest death percentage per population of {df3.DeathPercentage[0]}% is {df3.location[0]}')
+   print(f'Country with highest death count of {df3.maxDeath.max()} is {df3.loc[df3.maxDeath.idxmax()].location}')
+
+
 
 if __name__ == '__main__':
     main()
